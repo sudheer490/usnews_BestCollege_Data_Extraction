@@ -29,10 +29,11 @@ pip install beautifulsoup4 pandas selenium
 
 2. Run extract_links.py to extract university links
   `python extract_links.py`
-3.After university_links.csv is generated, run university_scraping.py to extract detailed data for each university:
+
+3. After university_links.csv is generated, run university_scraping.py to extract detailed data for each university:
   `python university_scraping.py`
 
-4.Optionally, you can use preprocess_dataframe.py within university_scraping.py or separately to preprocess the extracted data.
+4. Optionally, you can use preprocess_dataframe.py within university_scraping.py or separately to preprocess the extracted data.
 
 ## Contributing
 Feel free to fork this project and submit pull requests if you have suggestions for improvements or have fixed any bugs.
