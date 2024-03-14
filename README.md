@@ -23,3 +23,20 @@ pip install beautifulsoup4 pandas selenium
 * 2024 Best National Universities _ US News Rankings.html: The HTML file from which university links are extracted.
 
 * README.md: This file, providing an overview and instructions for the project.
+
+## How to Run
+1. Ensure the HTML file 2024 Best National Universities _ US News Rankings.html is in the same directory as the scripts.
+
+2. Run extract_links.py to extract university links
+  `python extract_links.py`
+3.After university_links.csv is generated, run university_scraping.py to extract detailed data for each university:
+  `python university_scraping.py`
+
+4.Optionally, you can use preprocess_dataframe.py within university_scraping.py or separately to preprocess the extracted data.
+
+## Contributing
+Feel free to fork this project and submit pull requests if you have suggestions for improvements or have fixed any bugs.
+
+## License
+This project is open-sourced under the MIT License. See the LICENSE file for more details.
+
