@@ -11,7 +11,7 @@ Before running the scripts, ensure you have the following installed:
 * Python 3.x
 * Required Python packages: beautifulsoup4, pandas, selenium
 You can install the required Python packages using pip:
-pip install beautifulsoup4 pandas selenium
+`pip install beautifulsoup4 pandas selenium`
 
 ## Files Description
 * extract_links.py: This script reads the HTML content of the "2024 Best National Universities | US News Rankings" page, extracts the university names and their links, and saves them into university_links.csv.
