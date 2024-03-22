@@ -11,17 +11,29 @@ from selenium.webdriver.common.by import By
 import time
 import logging
 
+import re
+
 def preprocess_dataframe(df):
+    # Extracting City, State, and ZIP Code from Address
     df[['City', 'State', 'ZIP Code']] = df['Address'].str.extract(r'([^,]+), ([A-Z]{2}), (\d{5})')
+    # Lowercasing column names and replacing spaces with underscores
     df.columns = df.columns.str.lower().str.replace(' ', '_', regex=False).str.replace('*', '', regex=False)
+    # Removing dollar signs and commas and converting to float for tuition & fees
     df['tuition_&_fees'] = df['tuition_&_fees'].str.replace('[\$,]', '', regex=True).astype(float)
-    df['room_&_board'] = df['room_&_board'].str.extract(r'(\d+)')[0].astype(float)
+    # Extracting room & board value using regular expression and converting to float
+    df['room_&_board'] = df['room_&_board'].str.extract(r'\$(\d{1,3}(?:,\d{3})*(?:\.\d+)?)')
+    # Removing commas and converting room & board value to float
+    df['room_&_board'] = df['room_&_board'].str.replace(',', '').astype(float)
+    # Dropping unnecessary columns
     df = df.drop(['address', 'unnamed:_11', 'major'], axis=1, errors='ignore')
+    
     return df
 
 
+
 university_links =pd.read_csv('university_links.csv')
-university_links =university_links[:1]
+print(university_links[100:])
+university_links =university_links[100:]
 # Setup basic configuration for logging
 logging.basicConfig(level=logging.INFO, filename='university_scraping.log', filemode='a',
                     format='%(asctime)s - %(levelname)s - %(message)s')
@@ -36,7 +48,7 @@ for index, row in university_links.iterrows():
         university_name = row['University Name']
         url = row['Link']
         logging.info(f"Processing {university_name} at {url}")
-        print(university_name,url)
+        print(f"Extracting data for:{university_counter}. {university_name} - {url}")
         # Initialize the WebDriver for each university
         driver = webdriver.Chrome()
         driver.get(url)
@@ -84,31 +96,19 @@ for index, row in university_links.iterrows():
         
         # Add the university's data to the list and increment the counter
         university_data_list.append(enrollment_data)
-        
-         # Check if the counter is a multiple of 10 to save the DataFrame
-        if university_counter % 10 == 0:
-            # Convert the list of dictionaries to a DataFrame
-            temp_df = pd.DataFrame(university_data_list)
-            # Save the DataFrame to a CSV file with a dynamic name
-            csv_filename = f'final_df_{university_counter//10}.csv'
-            save_df =preprocess_dataframe(temp_df)
-            save_df.to_csv(csv_filename, index=False)
-            print(f'DataFrame saved as {csv_filename}')
-        
-        # Close the driver after scraping is done
+
         driver.quit()
+        driver2.quit()
         logging.info(f"Completed processing for {university_name}")
-        
+        university_counter=+1
     except Exception as e:
         logging.error(f"An error occurred at index {index} for {university_name}: {e}")
         driver.quit()  # Ensure the driver is closed on error
+        driver2.quit()
 
-# Save any remaining data
-if university_data_list:
-    temp_df = pd.DataFrame(university_data_list)
-    csv_filename = f'final_df_{(university_counter + 9) // 10}.csv'  # Adjust to save the final batch
-    save_df =preprocess_dataframe(temp_df)
-    save_df.to_csv(csv_filename, index=False)
-    logging.info(f'Final DataFrame saved as {csv_filename}')
-
+university_df = pd.DataFrame(university_data_list)
+university_df.to_csv('final_df_raw.csv', index=False)
+save_df =preprocess_dataframe(university_df)
+save_df.to_csv('final_df.csv', index=False)
+logging.info('Final DataFrame saved as final_df.csv')
 logging.info("Scraping task completed.")
